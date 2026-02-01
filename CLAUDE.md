@@ -1,48 +1,65 @@
-# Ralph - Claude Code Instructions
+# Ralph
 
-Autonomous agent loop using Docker Desktop sandboxes.
+Electron app for managing autonomous Claude agent loops.
 
-## Architecture
+## Quick Start
 
-- `ralph.sh` - Loop script that invokes Claude via Docker sandbox
-- `prompts/` - Agent instructions for each mode (backend/frontend)
+```bash
+npm install
+npm run dev
+```
 
 ## How It Works
 
-Uses Docker Desktop's sandbox feature:
-```bash
-docker sandbox run claude --permission-mode acceptEdits -p "..."
+Ralph manages `.ralph/` folders in your projects with minimal config:
+
+```
+.ralph/
+├── prd.json              # Features to implement
+└── progress/
+    └── features.txt      # Append-only progress log
 ```
 
-Benefits:
-- Working directory mounts at same path inside container
-- Git config auto-injected
-- Credentials stored in Docker volume
-- Isolated execution environment
+Context comes from your existing project files (`CLAUDE.md`, `AGENTS.md`) - no duplication.
 
-## Iteration Loop
+## PRD Format
 
-Each iteration:
-1. Invokes `docker sandbox run claude` with prompt
-2. Claude reads specs, picks one task, implements it
-3. Output displayed with verbose logging
-4. Changes committed with "Ralph iteration N"
-5. Sleeps 2s between iterations
+```json
+{
+  "project": "my-project",
+  "description": "What this project does",
+  "features": [
+    {
+      "id": "F-001",
+      "title": "Feature title",
+      "description": "What it should do",
+      "steps": ["Step 1", "Step 2"],
+      "priority": 1,
+      "passes": false
+    }
+  ]
+}
+```
+
+## Loop Workflow
+
+Each iteration, Claude:
+1. Reads `CLAUDE.md`/`AGENTS.md` for context
+2. Reads `.ralph/prd.json` for features
+3. Picks highest-priority feature where `passes=false`
+4. Implements it, runs tests, commits
+5. Sets `passes=true`, appends to progress log
+6. Outputs `<promise>COMPLETE</promise>` when all done
+
+## Execution Modes
+
+- **Docker sandbox** (default) - Isolated, safe for unattended runs
+- **Direct CLI** - Faster, for supervised runs
 
 ## Commands
 
 ```bash
-# Authenticate (first time)
-docker sandbox run claude
-
-# Run backend loop
-./ralph.sh 10 backend
-
-# Run frontend loop
-./ralph.sh 5 frontend
+npm run dev        # Dev mode with hot reload
+npm run build      # Build for production
+npm run start      # Run built app
 ```
-
-## Adding New Prompts
-
-1. Create `prompts/newmode.md` with agent instructions
-2. Run with `./ralph.sh 10 newmode`

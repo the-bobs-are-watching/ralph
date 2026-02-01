@@ -1,98 +1,107 @@
 # Ralph
 
-Autonomous development agent that runs Claude Code in a loop using Docker Desktop sandboxes.
-
-Based on [Geoffrey Huntley's Ralph technique](https://www.aihero.dev/getting-started-with-ralph).
+Electron app for running Claude in autonomous loops on your projects.
 
 ## Prerequisites
 
-- **Docker Desktop 4.50+** with beta features enabled
+- **Node.js 18+**
+- **Docker Desktop 4.50+** with beta features enabled (for sandboxed runs)
 - Run `docker sandbox run claude` once to authenticate
 
 ## Quick Start
 
 ```bash
-# 1. Authenticate (first time only)
-docker sandbox run claude
-
-# 2. Create your PRD in the project
-cd ~/project/backend
-claude  # Use Shift+Tab for plan mode, save as PRD.md
-
-# 3. Create empty progress file
-touch progress.txt
-
-# 4. Run Ralph
-/path/to/ralph/ralph.sh 10 backend
+# Install and run
+npm install
+npm run dev
 ```
 
-## Usage
+## How to Use
 
-```bash
-./ralph.sh [max_iterations] [prompt_name]
-```
+### 1. Add a Project
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `max_iterations` | 10 | Maximum Claude invocations |
-| `prompt_name` | backend | Prompt to use (`backend` or `frontend`) |
-
-## How It Works
-
-1. Ralph reads `PRD.md` (requirements) and `progress.txt` (work log)
-2. Finds the next unchecked item in PRD.md
-3. Implements it, runs tests
-4. Checks off the item in PRD.md
-5. Appends to progress.txt
-6. Commits changes
-7. Repeats until done or max iterations
-
-## Project Setup
+Click **+ Add Project** and select a folder. Ralph creates:
 
 ```
 your-project/
-├── PRD.md           # Requirements with checkboxes
-├── progress.txt     # Work log (created empty, Ralph appends)
-├── CLAUDE.md        # Project conventions
+├── .ralph/
+│   ├── prd.json                 # Features to implement
+│   └── progress/
+│       └── features.txt         # Work log (Claude appends here)
+├── CLAUDE.md                    # Your project context (Claude reads this)
 └── src/
 ```
 
+### 2. Define Features
+
+In the **PRD** tab, add features you want Claude to implement:
+
+- **Title**: Short name
+- **Description**: What it should do
+- **Steps**: Implementation steps (optional)
+- **Priority**: Lower = done first
+
+### 3. Run the Loop
+
+Click the **▶ Run** button. Each iteration, Claude will:
+
+1. Read your `CLAUDE.md` for project context
+2. Read recent git history
+3. Pick the highest-priority incomplete feature
+4. Implement it and write tests
+5. Run tests and linting (must pass)
+6. Commit with descriptive message
+7. Mark the feature as complete
+8. Log progress with learnings
+
+The loop stops when all features are done or max iterations reached.
+
+### 4. Monitor Progress
+
+- **Output** tab: Live Claude output
+- **Progress** tab: Append-only work log
+- **Context** tab: View/edit your project's `CLAUDE.md`
+
+## Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Max iterations** | Stop after N iterations (cost control) |
+| **Use Docker sandbox** | On = isolated/safe, Off = faster but less safe |
+
 ## PRD Format
 
-```markdown
-# Project Name
-
-## Overview
-What you're building.
-
-## Features
-- [ ] Feature 1: description
-- [ ] Feature 2: description
-- [ ] Feature 3: description
-
-## API Endpoints
-- [ ] POST /api/users - Create user
-- [ ] GET /api/users/:id - Get user
+```json
+{
+  "project": "my-app",
+  "description": "What this project does",
+  "features": [
+    {
+      "id": "F-001",
+      "title": "Add user authentication",
+      "description": "Login/logout with JWT tokens",
+      "steps": ["Create auth context", "Add login form"],
+      "priority": 1,
+      "passes": false
+    }
+  ]
+}
 ```
 
-Ralph checks off items as it completes them.
+- `passes: false` = not done
+- `passes: true` = complete (Claude sets this after tests pass)
 
-## Files
+## Tips
 
+- **Write good CLAUDE.md**: Include stack, conventions, commands. Claude reads this every iteration.
+- **Small features**: Break work into small pieces. One feature = one iteration.
+- **Let tests verify**: Claude won't mark complete unless tests pass.
+- **Watch the first run**: Use Docker off for faster iteration while supervising.
+
+## Development
+
+```bash
+npm run dev        # Dev mode with hot reload
+npm run build      # Build for production
+npm run start      # Run built app
 ```
-ralph/
-├── ralph.sh             # Main script
-└── prompts/
-    ├── backend.md       # Backend agent instructions
-    └── frontend.md      # Frontend agent instructions
-```
-
-## Stopping
-
-- `Ctrl+C` to stop the loop
-- Ralph stops automatically when all PRD items are checked
-
-## Sources
-
-- [Getting Started With Ralph](https://www.aihero.dev/getting-started-with-ralph)
-- [Docker Sandboxes Docs](https://docs.docker.com/ai/sandboxes/)
