@@ -1,0 +1,44 @@
+{
+  "name": "ralph",
+  "version": "1.0.0",
+  "description": "Autonomous Claude agent loop manager",
+  "main": "dist/main/main/index.js",
+  "scripts": {
+    "dev": "npm run build:main && concurrently -n main,renderer,electron \"npm run dev:main\" \"npm run dev:renderer\" \"sleep 2 && npm run start\"",
+    "dev:main": "tsc -p tsconfig.main.json --watch",
+    "dev:renderer": "vite",
+    "build": "npm run build:main && npm run build:renderer",
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:renderer": "vite build",
+    "start": "electron .",
+    "package": "electron-builder"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "concurrently": "^9.0.0",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0"
+  },
+  "build": {
+    "appId": "com.toadstuhl.ralph",
+    "productName": "Ralph",
+    "files": [
+      "dist/**/*"
+    ],
+    "mac": {
+      "target": "dmg"
+    }
+  }
+}
