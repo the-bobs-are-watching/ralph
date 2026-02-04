@@ -20,10 +20,11 @@ export function Settings({
           onChange={(e) => onMaxIterationsChange(Number(e.target.value))}
           className="bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-neutral-600"
         >
+          <option value={1}>1</option>
+          <option value={2}>2</option>
+          <option value={3}>3</option>
+          <option value={4}>4</option>
           <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
         </select>
       </div>
 

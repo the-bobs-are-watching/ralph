@@ -21,7 +21,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('prd')
   const [output, setOutput] = useState<OutputLine[]>([])
   const [useDocker, setUseDocker] = useState(false)
-  const [maxIterations, setMaxIterations] = useState(10)
+  const [maxIterations, setMaxIterations] = useState(1)
 
   useEffect(() => {
     loadProjects(true) // Auto-select first project on initial load

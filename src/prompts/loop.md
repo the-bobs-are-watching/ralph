@@ -26,13 +26,19 @@ You are an autonomous coding agent. Complete ONE feature per iteration.
 13. Run linter if available (ruff, eslint, etc.)
 14. If tests fail, fix and re-run. Do NOT proceed until passing.
 
-## COMMIT
-15. Stage and commit with descriptive message
+## Update Ralph config
 16. Update .ralph/prd.json: set passes=true for this feature
-
-## LOG
 17. Append to .ralph/progress/features.txt:
 ---
+
+## REFLECT                                                                                                                                        
+18. Before ending, reflect on this iteration:                                                                                                     
+   - What slowed you down?                                                                                                                       
+   - Did you hit any walls where you couldn't see enough context?                                                                                
+   - Were there tools/commands that gave unhelpful output?                                                                                       
+   - What would have made this faster?
+Append to .ralph/progress/features.txt under "Reflection:" heading    
+
 ## [DATE] [FEATURE_ID]
 Status: complete
 Files: [changed files]
